@@ -2,12 +2,12 @@ pipeline {
     agent any
 
     environment {
-        AWS_REGION          = 'eu-west-1'
-        ECR_REPOSITORY_NAME = 'repo1'
-        SSH_CREDENTIAL_ID   = 'ssh-target'
+        AWS_REGION            = 'eu-west-1'
+        ECR_REPOSITORY_NAME   = 'repo1'
+        SSH_CREDENTIAL_ID     = 'ssh-target'
         AWS_ACCESS_KEY_ID     = credentials('aws_access_key_id')
         AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
-        VENV_DIR            = "${WORKSPACE}/.venv"   // venv lives inside the workspace
+        VENV_DIR              = '/opt/jenkins-venv'   // shared, pre-installed venv
     }
 
     stages {
