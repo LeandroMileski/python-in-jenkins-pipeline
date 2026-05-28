@@ -14,7 +14,6 @@ pipeline {
         stage('Fetch Images') {
             steps {
                 // Python fetches tags and saves them to a file
-                sh 'pip install'
                 sh 'python3 fetch-ecr-images.py > image_tags.txt'
                 script {
                     env.IMAGE_LIST = readFile('image_tags.txt').trim()
