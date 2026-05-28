@@ -52,10 +52,10 @@ pipeline {
             steps {
                 withCredentials([
                     sshUserPrivateKey(
-                        credentialsId: "${SSH_CREDENTIAL_ID}"
-                        keyFileVariable: 'SSH_KEY'
+                        credentialsId: "${SSH_CREDENTIAL_ID}",
+                        keyFileVariable: 'SSH_KEY',
                     )
-                ]){
+                ]) {
                     sh "python3 deploy.py"
                 }
             }
