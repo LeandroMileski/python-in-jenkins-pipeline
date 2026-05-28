@@ -56,7 +56,7 @@ pipeline {
                         keyFileVariable: 'SSH_KEY',
                     )
                 ]) {
-                    sh "python3 deploy.py"
+                    sh "${VENV_DIR}/bin/python deploy.py"
                 }
             }
         }
