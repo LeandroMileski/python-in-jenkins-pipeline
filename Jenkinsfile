@@ -8,6 +8,7 @@ pipeline {
         AWS_ACCESS_KEY_ID     = credentials('aws_access_key_id')
         AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
         VENV_DIR              = '/opt/jenkins-venv'   // shared, pre-installed venv
+        PATH                  = "${VENV_DIR}/bin:${PATH}"
     }
 
     stages {
