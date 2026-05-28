@@ -6,7 +6,7 @@ import os
 REGION          = os.environ.get("AWS_REGION", "eu-west-1")
 REPOSITORY_NAME = os.environ.get("ECR_REPOSITORY_NAME", "repo1")
 HOST        = os.environ.get("HOST", "172.237.115.218")
-USER        = os.environ.get("USER", "root")
+USER        = os.environ.get("EC2_USER", "root")
 SSH_KEY         = os.environ.get("SSH_KEY")
 SELECTED_TAG    = os.environ.get("SELECTED_TAG")
 
@@ -50,7 +50,6 @@ def ssh(host, user, key, command):
         sys.exit(1)
 
 
-
 def main():
     validate_env()
 
@@ -64,14 +63,14 @@ def main():
         print(f"Image URI: {image_uri}")
 
         print("\nLogging Server into ECR...")
-        ssh(f"aws ecr get-login-password --region {REGION} | "
+        ssh(HOST, USER, SSH_KEY, f"aws ecr get-login-password --region {REGION} | "
             f"docker login --username AWS --password-stdin {registry}")
 
         print(f"\nPulling image on EC2: {image_uri}")
-        ssh(f"docker pull {image_uri}")
+        ssh(HOST, USER, SSH_KEY, f"docker pull {image_uri}")
 
         print("\nDeploying container...")
-        ssh(f"docker stop app || true && "
+        ssh(HOST, USER, SSH_KEY, f"docker stop app || true && "
             f"docker rm app || true && "
             f"docker run -d --name app -p 80:80 {image_uri}")
 
@@ -83,6 +82,6 @@ def main():
         sys.exit(1)
 
 
-if __name__ == '__name__':
+if __name__ == '__main__':
     main()
 

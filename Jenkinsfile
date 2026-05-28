@@ -4,19 +4,17 @@ pipeline {
     environment {
         AWS_REGION            = 'eu-west-1'
         ECR_REPOSITORY_NAME   = 'repo1'
-        USER                  = 'root'
+        EC2_USER              = 'root'
+        EC2_HOST              = "${env.HOST}"
         SSH_CREDENTIAL_ID     = 'ssh-target'
         AWS_ACCESS_KEY_ID     = credentials('aws_access_key_id')
         AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
-        VENV_DIR              = '/opt/jenkins-venv'   // shared, pre-installed venv
-        HOST                  = "${env.HOST}"
-
+        VENV_DIR              = '/opt/jenkins-venv'
     }
 
     stages {
         stage('Fetch Images') {
             steps {
-                // Python fetches tags and saves them to a file
                 sh "${VENV_DIR}/bin/python fetch-ecr-images.py > image_tags.txt"
                 script {
                     env.IMAGE_LIST = readFile('image_tags.txt').trim()
@@ -28,10 +26,7 @@ pipeline {
         stage('Select Image') {
             steps {
                 script {
-                    // Parse the tags into a list for the dropdown
                     def tags = env.IMAGE_LIST.split('\n').toList()
-
-                    // Jenkins pauses here and shows the user a dropdown
                     def userInput = input(
                         message: 'Select the image to deploy:',
                         parameters: [
@@ -42,18 +37,18 @@ pipeline {
                             )
                         ]
                     )
-                    env.SELECTED_TAG = userInput
+                    env.SELECTED_TAG = userInput.split()[0]
                     echo "User selected: ${env.SELECTED_TAG}"
                 }
             }
         }
 
-        stage('Deploy'){
+        stage('Deploy') {
             steps {
                 withCredentials([
                     sshUserPrivateKey(
                         credentialsId: "${SSH_CREDENTIAL_ID}",
-                        keyFileVariable: 'SSH_KEY',
+                        keyFileVariable: 'SSH_KEY'
                     )
                 ]) {
                     sh "${VENV_DIR}/bin/python deploy.py"
