@@ -2,6 +2,8 @@ import boto3
 import sys
 import subprocess
 import os
+import requests
+
 
 REGION          = os.environ.get("AWS_REGION", "eu-west-1")
 REPOSITORY_NAME = os.environ.get("ECR_REPOSITORY_NAME", "repo1")
@@ -52,6 +54,16 @@ def ssh(host, user, key, command):
         sys.exit(1)
 
 
+def test(url):
+    try:
+        response = requests.get(url, timeout=5)
+        print(f'\nTest: {url}')
+        print(f"Status Code: {response.status_code}")
+    except requests.exceptions.RequestException as e:
+        print(f"Connection error: {e}")
+
+
+
 def main():
     validate_env()
 
@@ -74,9 +86,10 @@ def main():
         print("\nDeploying container...")
         ssh(HOST, USER, SSH_KEY, f"docker stop app || true && "
             f"docker rm app || true && "
-            f"docker run -d --name app -p 80:80 {image_uri}")
+            f"docker run -d --name app -p 80:80 -p 3000:3000 {image_uri}")
 
         print(f"\nDeployment complete: {image_uri}")
+        test("http://172.237.115.218:3000/")
         sys.exit(0)
 
     except Exception as e:
