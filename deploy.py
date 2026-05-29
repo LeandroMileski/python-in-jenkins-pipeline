@@ -7,8 +7,10 @@ REGION          = os.environ.get("AWS_REGION", "eu-west-1")
 REPOSITORY_NAME = os.environ.get("ECR_REPOSITORY_NAME", "repo1")
 HOST        = os.environ.get("HOST", "172.237.115.218")
 USER        = os.environ.get("EC2_USER", "root")
-SSH_KEY         = os.environ.get("SSH_KEY")
-SELECTED_TAG    = os.environ.get("SELECTED_TAG")
+SSH_KEY         = os.environ.get("SSH_KEY","~/.ssh/id_rsa")
+SELECTED_TAG    = os.environ.get("SELECTED_TAG","1.0")
+
+
 
 
 def validate_env():
